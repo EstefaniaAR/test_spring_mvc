@@ -32,6 +32,7 @@
 					<th>Last Name</th>
 					<th>Email</th>
 					<th>Creation Date</th>
+					<th>Edit </th>
 				</tr>
 			</thead>
 			<tbody>
@@ -41,6 +42,7 @@
 					<td th:text="${client.lastName}"></td>
 					<td th:text="${client.email}"></td>
 					<td th:text="${client.creationDate}"></td>
+					<td><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${client.id}">Edit </a></td>
 				</tr>
 			</tbody>
 		</table>

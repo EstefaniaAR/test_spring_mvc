@@ -12,6 +12,11 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name="Client")
@@ -24,15 +29,28 @@ public class Client implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
+	
+	@NotEmpty
 	private String name;
+	
+	@NotEmpty
 	@Column(name="last_name")
 	private String lastName;
+	
+	@NotEmpty
+	@Email
 	private String email;
 	
 	@Column(name="creation_date")
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern="dd/MM/yyyy")
+	@NotNull
 	private Date creationDate;
 	
+	public Client ()
+	{
+		creationDate = new Date();
+	}
 	@PrePersist
 	public void prePersist()
 	{
