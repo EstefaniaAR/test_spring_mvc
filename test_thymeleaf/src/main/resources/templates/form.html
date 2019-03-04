@@ -11,24 +11,31 @@
 </head>
 <body>
 	<div class="container">
-		<h1 th:text="${title}"></h1>
+		<h1 class="text.secondary border border-success border-top-0 border-left-0 border-right-0" th:text="${title}"></h1>
+		<div th:object="${client}" th:remove="tag">
+			<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+				<li th:each="err: ${#fields.errors('*')}" th:text="${err}">
+			</ul>
+		</div>
 		<form th:action="@{/form}" th:object="${client}" method="post">
 			<div class="form-group">
 				<label for="name" >Name</label>
-				<input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter Name"/>
+				<input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter Name" th:errorClass="'form-control alert-danger'"/>
+				<small class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
 			</div>
 			
 			<div class="form-group">
 				<label for="last_name" >Last Name</label>
-				<input type="text" th:field="*{lastName}" class="form-control" id="last_name" placeholder="Enter Last Name"/>
+				<input type="text" th:field="*{lastName}" class="form-control" id="last_name" placeholder="Enter Last Name" th:errorClass="'form-control alert-danger'"/>
+				<small class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
 			</div>
 			
 			<div class="form-group">
-				<label for="email" >Last Name</label>
-				<input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Enter Email"/>
+				<label for="email" >Email</label>
+				<input type="text" th:field="*{email}" class="form-control" id="email" placeholder="Enter Email" th:errorClass="'form-control alert-danger'"/>
+				<small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
 			</div>
-			<input type="hidden" th:field="*{id}"/>
-			<button type="submit" class="btn btn-primary">Submit</button>
+			<button type="submit" class="btn btn-primary">Create Client</button>
 		</form>
 	</div>
 </body>

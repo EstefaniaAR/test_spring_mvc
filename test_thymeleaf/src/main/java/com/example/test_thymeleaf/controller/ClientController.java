@@ -2,9 +2,12 @@ package com.example.test_thymeleaf.controller;
 
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -34,8 +37,13 @@ public class ClientController
 		return "form";
 	}
 	@PostMapping("/form")
-	public String insert(Client client)
+	public String insert(@Valid Client client, BindingResult result, Model model)
 	{
+		if(result.hasErrors())
+		{
+			model.addAttribute("title", "Client Form");
+			return "form";
+		}
 		cd.save(client);
 		return "redirect:clients";
 	}
