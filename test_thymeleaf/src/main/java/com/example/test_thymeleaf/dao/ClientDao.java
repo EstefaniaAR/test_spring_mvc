@@ -9,4 +9,5 @@ public interface ClientDao
 	public List<Client>findAll();
 	public void save(Client client);
 	public Client findById(Long id);
+	public void delete(Long id);
 }

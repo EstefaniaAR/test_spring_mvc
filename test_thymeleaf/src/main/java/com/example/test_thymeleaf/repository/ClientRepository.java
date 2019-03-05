@@ -36,8 +36,17 @@ public class ClientRepository implements ClientDao
 	}
 
 	@Override
+	@Transactional
 	public Client findById(Long id)
 	{
 		return em.find(Client.class, id);
+	}
+
+	@Override
+	@Transactional
+	public void delete(Long id) 
+	{
+		Client client = findById(id);
+		em.remove(client);
 	}
 }

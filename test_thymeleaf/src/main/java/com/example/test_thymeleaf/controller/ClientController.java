@@ -68,5 +68,13 @@ public class ClientController
 		model.put("title", "Edit Client");
 		return "form";
 	}
+	
+	@GetMapping("/erase/{id}")
+	public String erase (@PathVariable(value="id") Long id, Map<String,Object>model)
+	{
+		if(id >0)
+			cd.delete(id);
+		return "redirect:/clients";
+	}
 
 }
