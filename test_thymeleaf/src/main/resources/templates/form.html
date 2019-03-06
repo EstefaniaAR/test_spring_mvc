@@ -35,7 +35,7 @@
 				<input type="text" th:field="*{email}" class="form-control" id="email" placeholder="Enter Email" th:errorClass="'form-control alert-danger'"/>
 				<small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
 			</div>
-			<button type="submit" class="btn btn-primary">Create Client</button>
+			<button type="submit" class="btn btn-primary" th:text="${button}"></button>
 		</form>
 	</div>
 </body>

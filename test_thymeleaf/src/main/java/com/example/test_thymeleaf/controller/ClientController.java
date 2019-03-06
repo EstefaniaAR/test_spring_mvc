@@ -17,13 +17,14 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.example.test_thymeleaf.dao.ClientDao;
 import com.example.test_thymeleaf.domain.Client;
+import com.example.test_thymeleaf.service.ClientService;
 
 @Controller
 @SessionAttributes("client")
 public class ClientController 
 {
 	@Autowired
-	private ClientDao cd;
+	private ClientService cd;
 	
 	@GetMapping("/clients")
 	public String list(Model model)
@@ -39,14 +40,16 @@ public class ClientController
 		Client client = new Client();
 		model.put("title", "Client Form");
 		model.put("client", client);
+		model.put("button", "Create");
 		return "form";
 	}
 	@PostMapping("/form")
-	public String insert(@Valid Client client, BindingResult result, Model model,SessionStatus status )
+	public String insert(@Valid Client client, BindingResult result, Map <String,Object>model,SessionStatus status )
 	{
 		if(result.hasErrors())
 		{
-			model.addAttribute("title", "Client Form");
+			model.put("title", "Client Form");
+			model.put("button", "Create");
 			return "form";
 		}
 		cd.save(client);
@@ -66,6 +69,7 @@ public class ClientController
 			return "redirect;/clients";
 		model.put("client", client);
 		model.put("title", "Edit Client");
+		model.put("button", "Edit");
 		return "form";
 	}
 	

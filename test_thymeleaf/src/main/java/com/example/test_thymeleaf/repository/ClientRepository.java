@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +17,6 @@ public class ClientRepository implements ClientDao
 	private EntityManager em;
 
 	@SuppressWarnings("unchecked")
-	@Transactional
 	@Override
 	public List<Client> findAll() 
 	{
@@ -26,7 +24,6 @@ public class ClientRepository implements ClientDao
 	}
 
 	@Override
-	@Transactional
 	public void save(Client client) 
 	{
 		if(client.getId() >0)
@@ -36,14 +33,12 @@ public class ClientRepository implements ClientDao
 	}
 
 	@Override
-	@Transactional
 	public Client findById(Long id)
 	{
 		return em.find(Client.class, id);
 	}
 
 	@Override
-	@Transactional
 	public void delete(Long id) 
 	{
 		Client client = findById(id);
