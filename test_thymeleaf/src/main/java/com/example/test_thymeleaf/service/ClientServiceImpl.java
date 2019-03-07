@@ -21,7 +21,7 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public List<Client> findAll() 
 	{
-		return cd.findAll();
+		return (List<Client>)cd.findAll();
 	}
 
 	@Override
@@ -35,14 +35,14 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public Client findById(Long id) 
 	{
-		return cd.findById(id);
+		return cd.findById(id).orElse(null);
 	}
 
 	@Override
 	@Transactional
 	public void delete(Long id) 
 	{
-		cd.delete(id);
+		cd.deleteById(id);
 	}
 	
 }
