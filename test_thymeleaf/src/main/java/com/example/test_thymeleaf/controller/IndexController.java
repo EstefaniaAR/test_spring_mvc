@@ -11,10 +11,10 @@ public class IndexController {
 	@Value(value = "${application.controller.title}")
 	private String title;
 	
-	@GetMapping("/greet")
+	@GetMapping("/home")
 	public String getIndex(Model model)
 	{
 		model.addAttribute("title",this.title);
-		return "greet"; 
+		return "layout/layout"; 
 	}
 }

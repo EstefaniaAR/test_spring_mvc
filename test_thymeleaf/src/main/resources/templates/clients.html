@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title th:text="${title}"></title>
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -10,44 +10,39 @@
 <link rel="stylesheet" th:href="@{/style/main.css}">
 </head>
 <body>
-	<header>
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-			<ul class="navbar-nav">
-				<li class="nav-item active"><a class="nav-link" href="#">Spring Boot</a></li>
-				<li class="nav-item"><a class="nav-link" th:href="@{/greet}">Home</a></li>
-				<li class="nav-item"><a class="nav-link" th:href="@{/clients}">Clients</a></li>
-				<li class="nav-item"><a class="nav-link" th:href="@{/form}">Create Client</a></li>
-			</ul>
-		</nav>
-	</header>
+	<header th:replace="layout/layout::header"></header>
 	
-	<div class="container">
-		<h1 class="text-secondary border boder-success"
-			th:text="${client_title}"></h1>
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Name</th>
-					<th>Last Name</th>
-					<th>Email</th>
-					<th>Creation Date</th>
-					<th>Edit </th>
-					<th>Delete</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="client: ${clients}">
-					<td th:text="${client.id}"></td>
-					<td th:text="${client.name}"></td>
-					<td th:text="${client.lastName}"></td>
-					<td th:text="${client.email}"></td>
-					<td th:text="${client.creationDate}"></td>
-					<td><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${client.id}">Edit </a></td>
-					<td><a class="btn btn-danger btn-xs" th:href="@{/erase/} + ${client.id}" onclick="return confirm('Are you Sure?');">Delete</a></td>
-				</tr>
-			</tbody>
-		</table>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${client_title}"></div>
+			<div class="card-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Last Name</th>
+							<th>Email</th>
+							<th>Creation Date</th>
+							<th>Edit </th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="client: ${clients}">
+							<td th:text="${client.id}"></td>
+							<td th:text="${client.name}"></td>
+							<td th:text="${client.lastName}"></td>
+							<td th:text="${client.email}"></td>
+							<td th:text="${client.creationDate}"></td>
+							<td><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${client.id}">Edit </a></td>
+							<td><a class="btn btn-danger btn-xs" th:href="@{/erase/} + ${client.id}" onclick="return confirm('Are you Sure?');">Delete</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
+	<footer th:replace="layout/layout::footer"></footer>
 </body>
 </html>

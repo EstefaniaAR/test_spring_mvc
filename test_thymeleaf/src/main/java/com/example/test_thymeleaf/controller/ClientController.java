@@ -11,11 +11,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.test_thymeleaf.dao.ClientDao;
 import com.example.test_thymeleaf.domain.Client;
 import com.example.test_thymeleaf.service.ClientService;
 
@@ -44,7 +43,7 @@ public class ClientController
 		return "form";
 	}
 	@PostMapping("/form")
-	public String insert(@Valid Client client, BindingResult result, Map <String,Object>model,SessionStatus status )
+	public String insert(@Valid Client client, BindingResult result, Map <String,Object>model,RedirectAttributes flash, SessionStatus status )
 	{
 		if(result.hasErrors())
 		{
@@ -53,6 +52,7 @@ public class ClientController
 			return "form";
 		}
 		cd.save(client);
+		flash.addFlashAttribute("success","Cliente has been created successfully");
 		status.setComplete();
 		return "redirect:clients";
 	}
@@ -74,10 +74,13 @@ public class ClientController
 	}
 	
 	@GetMapping("/erase/{id}")
-	public String erase (@PathVariable(value="id") Long id, Map<String,Object>model)
+	public String erase (@PathVariable(value="id") Long id, Map<String,Object>model,RedirectAttributes flash)
 	{
 		if(id >0)
+		{
 			cd.delete(id);
+		}
+		flash.addFlashAttribute("success","Client has been deleted successfuly");
 		return "redirect:/clients";
 	}
 

@@ -10,33 +10,52 @@
 <link rel="stylesheet" th:href="@{/style/main.css}">
 </head>
 <body>
-	<div class="container">
-		<h1 class="text.secondary border border-success border-top-0 border-left-0 border-right-0" th:text="${title}"></h1>
-		<div th:object="${client}" th:remove="tag">
-			<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
-				<li th:each="err: ${#fields.errors('*')}" th:text="${err}">
-			</ul>
+	<header th:replace="layout/layout::header"></header>
+
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${title}"></div>
+			<div class="card-body">
+				<div class="container">
+					<div th:object="${client}" th:remove="tag">
+						<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger"
+							role="alert">
+							<li th:each="err: ${#fields.errors('*')}" th:text="${err}">
+						</ul>
+					</div>
+					<form th:action="@{/form}" th:object="${client}" method="post">
+						<div class="form-group">
+							<label for="name">Name</label> <input type="text"
+								th:field="*{name}" class="form-control" id="name"
+								placeholder="Enter Name"
+								th:errorClass="'form-control alert-danger'" /> <small
+								class="text-danger" th:if="${#fields.hasErrors('name')}"
+								th:errors="*{name}"></small>
+						</div>
+
+						<div class="form-group">
+							<label for="last_name">Last Name</label> <input type="text"
+								th:field="*{lastName}" class="form-control" id="last_name"
+								placeholder="Enter Last Name"
+								th:errorClass="'form-control alert-danger'" /> <small
+								class="text-danger" th:if="${#fields.hasErrors('lastName')}"
+								th:errors="*{lastName}"></small>
+						</div>
+
+						<div class="form-group">
+							<label for="email">Email</label> <input type="text"
+								th:field="*{email}" class="form-control" id="email"
+								placeholder="Enter Email"
+								th:errorClass="'form-control alert-danger'" /> <small
+								class="text-danger" th:if="${#fields.hasErrors('email')}"
+								th:errors="*{email}"></small>
+						</div>
+						<button type="submit" class="btn btn-primary" th:text="${button}"></button>
+					</form>
+				</div>
+			</div>
 		</div>
-		<form th:action="@{/form}" th:object="${client}" method="post">
-			<div class="form-group">
-				<label for="name" >Name</label>
-				<input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter Name" th:errorClass="'form-control alert-danger'"/>
-				<small class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
-			</div>
-			
-			<div class="form-group">
-				<label for="last_name" >Last Name</label>
-				<input type="text" th:field="*{lastName}" class="form-control" id="last_name" placeholder="Enter Last Name" th:errorClass="'form-control alert-danger'"/>
-				<small class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
-			</div>
-			
-			<div class="form-group">
-				<label for="email" >Email</label>
-				<input type="text" th:field="*{email}" class="form-control" id="email" placeholder="Enter Email" th:errorClass="'form-control alert-danger'"/>
-				<small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
-			</div>
-			<button type="submit" class="btn btn-primary" th:text="${button}"></button>
-		</form>
 	</div>
+	<footer th:replace="layout/layout::footer"></footer>
 </body>
 </html>
