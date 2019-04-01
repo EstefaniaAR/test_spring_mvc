@@ -5,18 +5,23 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.test_thymeleaf.domain.Client;
 import com.example.test_thymeleaf.service.ClientService;
+import com.example.test_thymeleaf.util.paginator.PageRender;
 
 @Controller
 @SessionAttributes("client")
@@ -26,10 +31,14 @@ public class ClientController
 	private ClientService cd;
 	
 	@GetMapping("/clients")
-	public String list(Model model)
+	public String list(@RequestParam (name="page", defaultValue="0")int page,Model model)
 	{
+		Pageable pageRequest = PageRequest.of(page, 5);
+		Page<Client> clients = cd.findAll(pageRequest);
+		PageRender <Client> pageRender = new PageRender<>("/clients",clients);
 		model.addAttribute("client_title","List of Clients");
-		model.addAttribute("clients",cd.findAll());
+		model.addAttribute("clients",clients);
+		model.addAttribute("page",pageRender);
 		return "clients";
 	}
 	

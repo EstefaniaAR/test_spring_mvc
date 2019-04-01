@@ -5,6 +5,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.test_thymeleaf.dao.ClientDao;
@@ -43,6 +45,12 @@ public class ClientServiceImpl implements ClientService
 	public void delete(Long id) 
 	{
 		cd.deleteById(id);
+	}
+
+	@Override
+	@Transactional
+	public Page<Client> findAll(Pageable pageable) {
+		return cd.findAll(pageable);
 	}
 	
 }
