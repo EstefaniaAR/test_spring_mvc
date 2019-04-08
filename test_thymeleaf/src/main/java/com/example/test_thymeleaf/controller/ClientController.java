@@ -67,14 +67,13 @@ public class ClientController
 		}
 		if(!image.isEmpty())
 		{
-			Path resourcesDir = Paths.get("src//main//resources//static/resources");
-			String resourcePath = resourcesDir.toFile().getAbsolutePath();
+			String resourcePath = "C://Temp//uploads";
 			try {
 				byte[] bytes = image.getBytes();
-				Path fullPath= Paths.get(resourcePath+"//"+image.getOriginalFilename());
+				Path fullPath= Paths.get(resourcePath+"//"+image.getOriginalFilename().replaceAll("\\s", ""));
 				Files.write(fullPath, bytes);
 				flash.addFlashAttribute("info","Photo uploaded successfuly:"+image.getOriginalFilename());
-				client.setImage(image.getOriginalFilename());
+				client.setImage(image.getOriginalFilename().replaceAll("\\s", ""));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
