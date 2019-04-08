@@ -1,6 +1,8 @@
 package com.example.test_thymeleaf.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,9 +14,13 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +41,7 @@ import com.example.test_thymeleaf.util.paginator.PageRender;
 @SessionAttributes("client")
 public class ClientController 
 {
+	private static final String UPLOAD_DIR="uploads";
 	@Autowired
 	private ClientService cd;
 	private final Logger log= LoggerFactory.getLogger(getClass());
@@ -69,16 +76,31 @@ public class ClientController
 			model.put("button", "Create");
 			return "form";
 		}
+		
 		if(!image.isEmpty())
 		{
+			if(client.getId() >0
+					 && client.getImage()!=null
+					 && client.getImage().length()>0)
+			{
+				Path photoPath = Paths.get(UPLOAD_DIR).resolve(client.getImage()).toAbsolutePath();
+				File file = photoPath.toFile();
+				if(file.exists() || file.canRead())
+				{
+					if(file.delete())
+					{
+						flash.addFlashAttribute("info","Old photo "+client.getImage()+" has been deleted successfully");
+					}
+				}
+			}
 			String uniqueFileName=UUID.randomUUID().toString()+image.getOriginalFilename().replaceAll("\\s", "");
-			Path rootPath = Paths.get("uploads").resolve(uniqueFileName);
+			Path rootPath = Paths.get(UPLOAD_DIR).resolve(uniqueFileName);
 			Path absolutePath = rootPath.toAbsolutePath();
 			log.info("rootpath: "+rootPath);
 			log.info("absolutepath: "+absolutePath);
 			try {
 				Files.copy(image.getInputStream(),absolutePath);
-				flash.addFlashAttribute("info","Photo uploaded successfuly:"+uniqueFileName);
+				flash.addFlashAttribute("info","Photo uploaded successfully:"+uniqueFileName);
 				client.setImage(uniqueFileName);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -112,7 +134,17 @@ public class ClientController
 	{
 		if(id >0)
 		{
+			Client client = cd.findById(id);
 			cd.delete(id);
+			Path photoPath = Paths.get(UPLOAD_DIR).resolve(client.getImage()).toAbsolutePath();
+			File file = photoPath.toFile();
+			if(file.exists() || file.canRead())
+			{
+				if(file.delete())
+				{
+					flash.addFlashAttribute("info","Photo "+client.getImage()+" has been deleted successfully");
+				}
+			}
 		}
 		flash.addFlashAttribute("success","Client has been deleted successfuly");
 		return "redirect:/clients";
@@ -130,5 +162,26 @@ public class ClientController
 		model.put("client", client);
 		model.put("title", "Client Details "+client.getName());
 		return "clientDetails" ;
+	}
+	
+	@GetMapping("/uploads/{filename:.+}")
+	public ResponseEntity<Resource> seePhoto(@PathVariable String filename)
+	{
+		Path photoPath = Paths.get(UPLOAD_DIR).resolve(filename).toAbsolutePath();
+		Resource resource =null;
+		try {
+			resource = new UrlResource(photoPath.toUri());
+			if(!resource.exists() || !resource.isReadable())
+			{
+				throw new RuntimeException("Runtime Exception: Unable to upload resource: "+filename);
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity
+				.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename:\""+resource.getFilename()+"\"")
+				.body(resource);
 	}
 }
