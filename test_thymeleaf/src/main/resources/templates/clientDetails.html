@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title th:text="${title}"></title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/style/main.css}">
+</head>
+<body>
+	<header th:replace="layout/layout::header"></header>
+	
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${title}"></div>
+			<div class="card-body">
+				<img th:if="${#strings.length(client.image)>0}" class="img-thumbnail rounded float-left" th:src="@{'/resources/'+${client.image}}" th:alt="${client.image}"/>
+				<ul class="list-group">
+					<li class="list-group-item" th:text="${client.name}"></li>
+					<li class="list-group-item" th:text="${client.lastName}"></li>
+					<li class="list-group-item" th:text="${client.email}"></li>
+					<li class="list-group-item" th:text="${client.creationDate}"></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout::footer"></footer>
+</body>
+</html>

@@ -47,6 +47,9 @@ public class Client implements Serializable{
 	@NotNull
 	private Date creationDate;
 	
+	
+	private String image;
+	
 	public Client ()
 	{
 		creationDate = new Date();
@@ -86,4 +89,11 @@ public class Client implements Serializable{
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	
 }

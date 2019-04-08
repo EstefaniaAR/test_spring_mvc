@@ -1,5 +1,9 @@
 package com.example.test_thymeleaf.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.test_thymeleaf.domain.Client;
@@ -52,13 +57,28 @@ public class ClientController
 		return "form";
 	}
 	@PostMapping("/form")
-	public String insert(@Valid Client client, BindingResult result, Map <String,Object>model,RedirectAttributes flash, SessionStatus status )
+	public String insert(@Valid Client client, BindingResult result,@RequestParam("file") MultipartFile image,Map <String,Object>model,RedirectAttributes flash, SessionStatus status )
 	{
 		if(result.hasErrors())
 		{
 			model.put("title", "Client Form");
 			model.put("button", "Create");
 			return "form";
+		}
+		if(!image.isEmpty())
+		{
+			Path resourcesDir = Paths.get("src//main//resources//static/resources");
+			String resourcePath = resourcesDir.toFile().getAbsolutePath();
+			try {
+				byte[] bytes = image.getBytes();
+				Path fullPath= Paths.get(resourcePath+"//"+image.getOriginalFilename());
+				Files.write(fullPath, bytes);
+				flash.addFlashAttribute("info","Photo uploaded successfuly:"+image.getOriginalFilename());
+				client.setImage(image.getOriginalFilename());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		cd.save(client);
 		flash.addFlashAttribute("success","Cliente has been created successfully");
@@ -93,4 +113,17 @@ public class ClientController
 		return "redirect:/clients";
 	}
 
+	@GetMapping("clientDetails/{id}")
+	public String getDetais(@PathVariable (name="id")Long id,Map <String, Object>model,RedirectAttributes flash)
+	{
+		Client client = cd.findById(id);
+		if(client ==null)
+		{
+			flash.addFlashAttribute("error","Client not found");
+			return "redirect:/clients";
+		}
+		model.put("client", client);
+		model.put("title", "Client Details "+client.getName());
+		return "clientDetails" ;
+	}
 }
