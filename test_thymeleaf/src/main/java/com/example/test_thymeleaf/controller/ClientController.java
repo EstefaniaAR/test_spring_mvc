@@ -1,13 +1,9 @@
 package com.example.test_thymeleaf.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.Map;
-import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -15,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,16 +30,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.test_thymeleaf.domain.Client;
 import com.example.test_thymeleaf.service.ClientService;
+import com.example.test_thymeleaf.service.IUploadFileService;
 import com.example.test_thymeleaf.util.paginator.PageRender;
 
 @Controller
 @SessionAttributes("client")
 public class ClientController 
 {
-	private static final String UPLOAD_DIR="uploads";
 	@Autowired
 	private ClientService cd;
-	private final Logger log= LoggerFactory.getLogger(getClass());
+	
+	@Autowired
+	IUploadFileService fs;
 	
 	@GetMapping("/clients")
 	public String list(@RequestParam (name="page", defaultValue="0")int page,Model model)
@@ -83,29 +80,18 @@ public class ClientController
 					 && client.getImage()!=null
 					 && client.getImage().length()>0)
 			{
-				Path photoPath = Paths.get(UPLOAD_DIR).resolve(client.getImage()).toAbsolutePath();
-				File file = photoPath.toFile();
-				if(file.exists() || file.canRead())
-				{
-					if(file.delete())
-					{
-						flash.addFlashAttribute("info","Old photo "+client.getImage()+" has been deleted successfully");
-					}
-				}
+				fs.delete(client.getImage());
+
 			}
-			String uniqueFileName=UUID.randomUUID().toString()+image.getOriginalFilename().replaceAll("\\s", "");
-			Path rootPath = Paths.get(UPLOAD_DIR).resolve(uniqueFileName);
-			Path absolutePath = rootPath.toAbsolutePath();
-			log.info("rootpath: "+rootPath);
-			log.info("absolutepath: "+absolutePath);
+			String uniqueFileName=null;
 			try {
-				Files.copy(image.getInputStream(),absolutePath);
-				flash.addFlashAttribute("info","Photo uploaded successfully:"+uniqueFileName);
-				client.setImage(uniqueFileName);
+				uniqueFileName = fs.copy(image);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			flash.addFlashAttribute("info","Photo uploaded successfully:"+uniqueFileName);
+			client.setImage(uniqueFileName);
+			
 		}
 		cd.save(client);
 		flash.addFlashAttribute("success","Cliente has been created successfully");
@@ -136,15 +122,9 @@ public class ClientController
 		{
 			Client client = cd.findById(id);
 			cd.delete(id);
-			Path photoPath = Paths.get(UPLOAD_DIR).resolve(client.getImage()).toAbsolutePath();
-			File file = photoPath.toFile();
-			if(file.exists() || file.canRead())
-			{
-				if(file.delete())
-				{
-					flash.addFlashAttribute("info","Photo "+client.getImage()+" has been deleted successfully");
-				}
-			}
+			fs.delete(client.getImage());
+			if(fs.delete(client.getImage()))
+				flash.addFlashAttribute("info","Photo "+client.getImage()+" has been deleted successfully");
 		}
 		flash.addFlashAttribute("success","Client has been deleted successfuly");
 		return "redirect:/clients";
@@ -167,14 +147,9 @@ public class ClientController
 	@GetMapping("/uploads/{filename:.+}")
 	public ResponseEntity<Resource> seePhoto(@PathVariable String filename)
 	{
-		Path photoPath = Paths.get(UPLOAD_DIR).resolve(filename).toAbsolutePath();
-		Resource resource =null;
+		Resource resource = null;
 		try {
-			resource = new UrlResource(photoPath.toUri());
-			if(!resource.exists() || !resource.isReadable())
-			{
-				throw new RuntimeException("Runtime Exception: Unable to upload resource: "+filename);
-			}
+			resource = fs.load(filename);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
