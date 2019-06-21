@@ -24,6 +24,7 @@
 							<th>Last Name</th>
 							<th>Email</th>
 							<th>Creation Date</th>
+							<th>Create Bill</th>
 							<th>Edit </th>
 							<th>Delete</th>
 						</tr>
@@ -35,6 +36,7 @@
 							<td th:text="${client.lastName}"></td>
 							<td th:text="${client.email}"></td>
 							<td th:text="${client.creationDate}"></td>
+							<td><a th:href="@{'/bill/form/'+${client.id}}" class="btn btn-success btn-xs">Create Bill</a></td>
 							<td><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${client.id}">Edit </a></td>
 							<td><a class="btn btn-danger btn-xs" th:href="@{/erase/} + ${client.id}" onclick="return confirm('Are you Sure?');">Delete</a></td>
 						</tr>
@@ -45,5 +47,5 @@
 		</div>
 	</div>
 	<footer th:replace="layout/layout::footer"></footer>
-</body>
+	</body>
 </html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+</head>
+<body>
+</body>
+<script type="text/javascript" th:fragment="javascript">
+$(document).ready(function() {
+
+	$("#search_product").autocomplete({
+
+		source : function(request, response) {
+			$.ajax({
+				url : "/bill/upload-products/" + request.term,
+				dataType : "json",
+				data : {
+					term : request.term
+				},
+				success : function(data) {
+					response($.map(data, function(item) {
+						return {
+							value : item.id,
+							label : item.description,
+							price : item.price,
+						};
+					}));
+				},
+			});
+		},
+		select : function(event, ui) {
+			//$("#search_product").val(ui.item.label);
+			if(itemHelper.hasProduct(ui.item.value))
+			{
+				itemHelper.increaseQuantity(ui.item.value,ui.item.price);
+				return false;
+			}
+			var line = $("#bill_item_templates").html();
+			line = line.replace(/{ID}/g,ui.item.value);
+			line = line.replace(/{NAME}/g,ui.item.label);
+			line = line.replace(/{PRICE}/g,ui.item.price);
+			$("#upload_item_products tbody").append(line);
+			itemHelper.getAmount(ui.item.value,ui.item.price,1)
+			return false;
+		}
+	});
+	$("form").submit(function()
+	{
+		$("#bill_item_templates").remove();
+		return;
+	})
+});
+
+var itemHelper={
+		getAmount:function(id,price,quantity)
+		{
+			$("#total_amount_"+id).html(parseInt(price) * parseInt(quantity));
+			this.getTotal();
+		}, 
+		hasProduct: function (id)
+		{
+			var resultado=false
+			$('input[name="item_id[]"]').each(function()
+			{
+				if(parseInt (id)==parseInt($(this).val()))
+				{
+					resultado = true;
+				}
+			});
+			return resultado;
+		},
+		increaseQuantity: function(id,price)
+		{
+			var quantity =$("#quantity_"+id).val() ? parseInt($("#quantity_"+id).val()):0;
+			$("#quantity_"+id).val(++quantity);
+			this.getAmount(id,price,quantity)
+		},
+		deleteItem: function(id)
+		{
+			$("#row_"+id).remove();
+			this.getTotal();
+		},
+		getTotal: function()
+		{
+			var total = 0;
+
+			$('span[id^="total_amount_"]').each(function()
+			{
+					total +=parseInt($(this).html());
+				
+			});
+			console.log(total)
+			$("#global_total").html(total);
+		}
+}
+
+
+	</script>
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js" ></script>
+	
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</html>

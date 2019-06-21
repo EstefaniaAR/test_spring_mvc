@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/style/main.css}">
+ <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+</head>
+	<body>
+		<header th:replace="layout/layout::header"></header>
+	
+		<div class="container py-4">
+			<div class="card bg-light">
+				<div class="card-header" th:text="${title}"></div>
+				<div class="card-body">
+					<h4 class="card-title"><a th:href="@{'/clientDetails/' + ${bill.client.id}}" class="btn btn-info btn-xs">Return to Client Details</a></h4>
+					<form th:action="@{/bill/form/}" method="post" th:object="${bill}">
+					
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Name</label>
+							<div class="col-sm-6">
+								<input th:value="*{client.name +' '+ client.lastName}" class="form-control" disabled='disabled'/>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Description</label>
+							<div class="col-sm-6">
+								<input type="text" th:field="*{description}" class="form-control" th:errorClass="'form-control is-invalid'"/>
+								<div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Observation</label>
+							<div class="col-sm-6">
+								<textarea th:field="*{observation}" class="form-control"></textarea>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Search Producto</label>
+							<div class="col-sm-6">
+								<input id="search_product" type="text" name="search_product" class="form-control"/>
+							</div>
+						</div>
+						<table th:replace="bill/item_templates :: bill_table"></table>
+						<table id="upload_item_products" class="table table-sm table-striped table-hover">
+							<thead>
+								<tr>
+									<th>Description</th>
+									<th>Price</th>
+									<th>Quantity</th>
+									<th>Total</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+							    <tr>
+							      <th>Total</th>
+							      <td></td>
+							      <td></td>
+							      <td><span id="global_total">0</span></td>
+							    </tr>
+							 </tfoot>
+						</table>
+						<div class="form-group row">
+							<div class="col-sm-6">
+								<input type="submit" value="Create bill" class="btn btn-secondary"/>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		<footer th:replace="layout/layout::footer"></footer>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js" ></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script th:replace="bill/js/product_autocomplete :: javascript"></script>
+	</body>
+</html>

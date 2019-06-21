@@ -1,13 +1,18 @@
 package com.example.test_thymeleaf.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -19,7 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name="Client")
+@Table(name="Clients")
 public class Client implements Serializable{
 
 	/**
@@ -47,6 +52,9 @@ public class Client implements Serializable{
 	@NotNull
 	private Date creationDate;
 	
+	@OneToMany(mappedBy="client",fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	private List<Bill>bills;
+	
 	
 	private String image;
 	
@@ -58,6 +66,11 @@ public class Client implements Serializable{
 	public void prePersist()
 	{
 		creationDate = new Date();
+		bills = new ArrayList<Bill>();
+	}
+	public void addBill(Bill bill)
+	{
+		bills.add(bill);
 	}
 	public long getId() {
 		return id;
@@ -95,5 +108,15 @@ public class Client implements Serializable{
 	public void setImage(String image) {
 		this.image = image;
 	}
-	
+	public List<Bill> getBills() {
+		return bills;
+	}
+	public void setBills(List<Bill> bills) {
+		this.bills = bills;
+	}
+	@Override
+	public String toString() {
+		return name+" "+lastName;
+	}
+
 }

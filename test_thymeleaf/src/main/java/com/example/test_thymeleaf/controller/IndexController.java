@@ -17,4 +17,5 @@ public class IndexController {
 		model.addAttribute("title",this.title);
 		return "layout/layout"; 
 	}
+	
 }
