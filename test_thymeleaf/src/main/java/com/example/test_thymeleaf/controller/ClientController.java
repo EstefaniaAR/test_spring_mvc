@@ -2,13 +2,10 @@ package com.example.test_thymeleaf.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-
 import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -16,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,6 +42,7 @@ public class ClientController
 	@Autowired
 	IUploadFileService fs;
 	
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@GetMapping("/clients")
 	public String list(@RequestParam (name="page", defaultValue="0")int page,Model model)
 	{
@@ -54,7 +54,7 @@ public class ClientController
 		model.addAttribute("page",pageRender);
 		return "clients";
 	}
-	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form")
 	public String insert (Map<String,Object> model)
 	{
@@ -64,6 +64,7 @@ public class ClientController
 		model.put("button", "Create");
 		return "form";
 	}
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping("/form")
 	public String insert(@Valid Client client, BindingResult result,@RequestParam("file") MultipartFile image,Map <String,Object>model,RedirectAttributes flash, SessionStatus status )
 	{
@@ -99,6 +100,7 @@ public class ClientController
 		return "redirect:clients";
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
 	@GetMapping("/form/{id}")
 	public String modify(@PathVariable(value="id") long id, Map<String,Object>model)
 	{
@@ -115,6 +117,7 @@ public class ClientController
 		return "form";
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/erase/{id}")
 	public String erase (@PathVariable(value="id") Long id, Map<String,Object>model,RedirectAttributes flash)
 	{
@@ -144,6 +147,7 @@ public class ClientController
 		return "clientDetails" ;
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/uploads/{filename:.+}")
 	public ResponseEntity<Resource> seePhoto(@PathVariable String filename)
 	{
@@ -159,4 +163,5 @@ public class ClientController
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename:\""+resource.getFilename()+"\"")
 				.body(resource);
 	}
+	
 }

@@ -12,12 +12,16 @@
 <body>
 	<header th:replace="layout/layout::header"></header>
 	
-	<div class="container-fluid">
-		<div class="jumbotron">
-		<p>This title and pharagraph are using a template and attributes that look like JSP code</p>
-		<h1 th:text="${title}"></h1>
-		<p th:text="${title}" />
+	<div class="container  py-4">
+		<div class="card bg-danger">
+			<div class="card-header"> Access Denied</div>
+				
+			<div class="card-body">
+				<h5 class="card-title"><span th:text="${#authentication.name}"></span> has not been granted permissions to this resource</h5>
+				<a th:href="@{/greet}" class="btn btn-outline-light" role="button">Go to Home page</a>
+			</div>
 		</div>
+
 	</div>
 	
 	<footer th:replace="layout/layout::footer"></footer>

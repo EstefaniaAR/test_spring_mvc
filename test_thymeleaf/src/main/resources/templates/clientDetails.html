@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="ISO-8859-1">
 <title th:text="${title}"></title>
@@ -16,7 +16,7 @@
 		<div class="card bg-light">
 			<div class="card-header" th:text="${title}"></div>
 			<div class="card-body">
-				<a th:href="@{'/bill/form/'+${client.id}}" class="btn btn-success btn-xs">Create Bill</a>
+				<a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/bill/form/'+${client.id}}" class="btn btn-success btn-xs">Create Bill</a>
 				<img th:if="${#strings.length(client.image)>0}" class="img-thumbnail rounded float-left" th:src="@{'/uploads/'+${client.image}}" th:alt="${client.image}"/>
 				<ul class="list-group">
 					<li class="list-group-item" th:text="${client.name}"></li>
@@ -28,12 +28,12 @@
 				<table th:if="${not #lists.isEmpty(client.bills)}" class="table table-bordered table-striped my-4">
 					<thead class="thead-inverse">
 						<tr>
-							<td>Folio</td>
+							<td>Foil</td>
 							<td>Description</td>
 							<td>Date</td>
 							<td>Total</td>
-							<td>Details</td>
-							<td>Delete</td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')">Details</td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')">Delete</td>
 						</tr>
 					</thead>
 					<tbody >
@@ -42,8 +42,8 @@
 							<td th:text="${bill.description}"></td>
 							<td th:text="${bill.creationDate}"></td>
 							<td th:text="${bill.getTotal()}"></td>
-							<td><a th:href="@{'/bill/billDetails/'+${bill.id}}" class="btn btn-primary btn-xs" >Details</a></td>
-							<td><a th:href="@{'/bill/delete/'+${bill.id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this bill?');">X</a></td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{'/bill/billDetails/'+${bill.id}}" class="btn btn-primary btn-xs" >Details</a></td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{'/bill/delete/'+${bill.id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this bill?');">X</a></td>
 						</tr>
 					</tbody>
 				</table>

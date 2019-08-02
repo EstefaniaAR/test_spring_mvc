@@ -14,7 +14,9 @@
 
 	<div class="container py-4">
 		<div class="card bg-light">
-			<div class="card-header" th:text="${title}"></div>
+			<div class="card-header" >
+				<h1 class="text-center" th:text="${title}"></h1>
+			</div>
 			<div class="card-body">
 				<div class="container">
 					<div th:object="${client}" th:remove="tag">
