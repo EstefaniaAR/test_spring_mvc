@@ -9,12 +9,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.test_thymeleaf.auth.handler.SuccessHandler;
+import com.example.test_thymeleaf.service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -31,24 +29,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
 	DataSource dataSource;
 	
 	@Autowired
+	UserService userService;
+	
+	@Autowired
 	public void configurerGlobal(AuthenticationManagerBuilder builder) throws Exception 
 	{
-		/*JDBC Authentication*/
-		builder.jdbcAuthentication()
-		.dataSource(dataSource)
+		builder.userDetailsService(userService)
 		.passwordEncoder(passwordEncoder)
-		.usersByUsernameQuery("select username,password,enabled from users where username=?")
-		.authoritiesByUsernameQuery("select u.username,a.authority from authorities a inner join users u on (a.user_id = u.id) where u.username =?");
-		
-		/* In memory Authentication
-		PasswordEncoder encoder = passwordEncoder;
-		UserBuilder users = User.builder().passwordEncoder(encoder::encode);
-		
-		builder.inMemoryAuthentication()
-		.withUser(users.username("admin").password("admin2019").roles("ADMIN","USER"))
-		.withUser(users.username("user").password("user2019").roles("USER"))
 		;
-		*/
 	}
 
 	@Override
